@@ -7,7 +7,7 @@ import {
   RestBindings,
 } from '@loopback/rest';
 import {Producer, producer as productDecorator} from 'loopback4-kafka-client';
-import {KafkaTopics, TestStream} from '../kafka-test/test-stream';
+import {Events, KafkaTopics, TestStream} from '../kafka-test/test-stream';
 
 /**
  * OpenAPI response for ping()
@@ -50,6 +50,12 @@ export class PingController {
   @get('/ping')
   @response(200, PING_RESPONSE)
   async ping(): Promise<object> {
+    await this.producer.send(Events.LANDED, [
+      {
+        url: 'example.com',
+        ts: new Date().getTime(),
+      },
+    ]);
     return {
       greeting: 'Hello from LoopBack',
     };
